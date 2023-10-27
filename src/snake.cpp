@@ -9,33 +9,51 @@ Snake::Snake(sf::Vector2f pos, int snakeSize) :
   app_(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "I don't fw snakes mane"),
   direction_(NONE) {
 
-  // Initalize snake
-  if (snakeSize > 0) {
-    float x = pos.x;
-    float y = pos.y;
+  uint8_t bodyCount = 1;
+  board_.resize(NUM_BLOCKS);
+  
+  // Initialize board
+  for (int i = 0; i < NUM_BLOCKS; i++) 
+    for (int j = 0; j < NUM_BLOCKS; j++) 
+      board_[i].push_back(0);
+  
+  // If we store head loc initially and always update it we never need to iterate looking for it
+  head_ = sf::Vector2i(NUM_BLOCKS/2, NUM_BLOCKS/2);
 
-    for (size_t i = 0; i < snakeSize; i ++) {
-      player_.push_back(Block(x, y, BLOCK_SIZE, BLOCK_SIZE, sf::Color::Green));
-      x -= BLOCK_SIZE + BLOCK_SPACING;
-    }
+  board_[NUM_BLOCKS/2][NUM_BLOCKS/2] = snakeSize;
+  board_[NUM_BLOCKS/2][NUM_BLOCKS/2-1] = snakeSize-1;
+  board_[NUM_BLOCKS/2][NUM_BLOCKS/2-2] = snakeSize-2;
+  board_[NUM_BLOCKS/2][NUM_BLOCKS/2-3] = snakeSize-3;
+  board_[NUM_BLOCKS/2][NUM_BLOCKS/2-4] = snakeSize-4;
+  board_[NUM_BLOCKS/2-1][NUM_BLOCKS/2-4] = snakeSize-5;
+  board_[NUM_BLOCKS/2-2][NUM_BLOCKS/2-4] = snakeSize-6;
+  board_[NUM_BLOCKS/2-3][NUM_BLOCKS/2-4] = snakeSize-7;
+  board_[NUM_BLOCKS/2-3][NUM_BLOCKS/2-5] = snakeSize-8;
 
-    turns_.resize(snakeSize);
-  }
+  show();
 
   // Initialize apple
-  float appleX = std::rand() % WINDOW_WIDTH;
-  float appleY = std::rand() % WINDOW_HEIGHT;
+  apple_.x = std::rand() % NUM_BLOCKS;
+  apple_.y = std::rand() % NUM_BLOCKS;
 
-  apple_ = Block(appleX, appleY, BLOCK_SIZE, BLOCK_SIZE, sf::Color::Red);
+  board_[apple_.x][apple_.y] = -1;
+}
+
+void Snake::moveSnake(int dX, int dY) {
+  1
+}
+
+void Snake::removeTail() {
+  for (int i = 0; i < NUM_BLOCKS; i++) 
+    for (int j = 0; j < NUM_BLOCKS; j++) 
+      if (board_[i][j] < 0)
+        board_[i][j] -= 1;
 }
 
 Snake::~Snake() {} 
 
 void Snake::update(sf::Time delta) {
-  Block oldHead = player_.front();
 
-  float playerX = oldHead.getX();
-  float playerY = oldHead.getY();\
   
   // account for delta of update function call
   float moveDelta = 4*BLOCK_SIZE * delta.asSeconds();
@@ -61,32 +79,6 @@ void Snake::update(sf::Time delta) {
       break;
   }
 
-  if (direction_ != NONE) {
-    turns_.push_front(turn_t(direction_, sf::Vector2f(playerX, playerY)));
-    for (auto t : turns_) {
-      if (isAtTurn(player_.back(), t))
-        turns_.pop_back();
-    }
-    for (int i = player_.size()-1; i > 0; i--) {
-      int turnIndex = turns_.size()-1;
-      if (i < turns_.size())
-        turnIndex = i - 1;
-      if (turns_.empty())
-        lerp(player_[i], player_[i-1], delta.asSeconds());
-      else {
-        lerp(player_[i], turns_[turnIndex], delta.asSeconds());
-      }
-        
-      // std::cout << i << ": " << player_[i].getPos().x << " " << player_[i].getPos().y << std::endl;
-      std::cout << turns_.size();
-      // sf::sleep(sf::milliseconds(50));
-    }
-    std::cout << "0: " << player_[0].getPos().x << " " << player_[0].getPos().y << std::endl;
-    player_[0].setPos(sf::Vector2f(playerX, playerY));
-  }
-
-
-
 }
 
 bool Snake::checkCollision() const {
@@ -94,25 +86,25 @@ bool Snake::checkCollision() const {
 }
 
 
-bool Snake::isAtTurn(Block thisBlock, turn_t thisTurn) const {
-  float blockX = thisBlock.getX();
-  float blockY = thisBlock.getY();
-  float turnX = thisTurn.second.x;
-  float turnY = thisTurn.second.y;
+// bool Snake::isAtTurn(rect_;thisBlock, turn_t thisTurn) const {
+//   float blockX = thisBlock.getX();
+//   float blockY = thisBlock.getY();
+//   float turnX = thisTurn.second.x;
+//   float turnY = thisTurn.second.y;
 
-  if (thisTurn.first == NORTH || thisTurn.first == SOUTH)
-    return blockY == turnY;
-  else 
-    return blockX == turnX;
-}
+//   if (thisTurn.first == NORTH || thisTurn.first == SOUTH)
+//     return blockY == turnY;
+//   else 
+//     return blockX == turnX;
+// }
 
 void Snake::lerp(Block& src, Block& dest, float delta) {
   src.setPos(src.getPos() + ((dest.getPos() - src.getPos()) * delta));
 }
 
-void Snake::lerp(Block& src, turn_t& dest, float delta) {
-  src.setPos(src.getPos() + ((dest.second - src.getPos()) * delta));
-}
+// void Snake::lerp(Block& src, turn_t& dest, float delta) {
+//   src.setPos(src.getPos() + ((dest.second - src.getPos()) * delta));
+// }
 
 void Snake::processEvents() {
   sf::Event event;
@@ -121,13 +113,13 @@ void Snake::processEvents() {
     if(event.type == sf::Event::Closed)
       app_.close();
     // Use if instead of else-if in case 2 keys pressed same time 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && direction_ != SOUTH) 
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && direction_ != SOUTH) 
       direction_ = NORTH;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && direction_ != NORTH) 
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && direction_ != NORTH) 
       direction_ = SOUTH;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && direction_ != WEST) 
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) && direction_ != WEST) 
       direction_ = WEST;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && direction_ != EAST) 
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) && direction_ != EAST) 
       direction_ = EAST;
   }
 }
@@ -157,7 +149,7 @@ int Snake::run() {
       while (timeSinceLastUpdate > TimePerFrame) {
         timeSinceLastUpdate -= TimePerFrame;
         processEvents();
-        update(TimePerFrame);
+        // update(TimePerFrame);
       }
       render();
     }

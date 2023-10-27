@@ -1,40 +1,78 @@
 #include "block.h"
+#include "snake.h"
 
 Block::Block() :
-  position(sf::Vector2f()),
-  width(40.0f),
-  height(20.0f),
-  color(sf::Color::Green)
+  position_(sf::Vector2f()),
+  width_(BLOCK_OFFSET),
+  height_(BLOCK_OFFSET),
+  color_(sf::Color::Green)
 {
-  block.setSize(sf::Vector2f(width, height));
-  block.setFillColor(color);
-  block.setPosition(position);
+  rect_.setSize(sf::Vector2f(width_, height_));
+  rect_.setFillColor(color_);
+  rect_.setPosition(position_);
 }
 
 Block::Block(float startX, float startY) :
-  width(25.0f),
-  height(20.0f),
-  color(sf::Color::Green)
+  width_(BLOCK_OFFSET),
+  height_(BLOCK_OFFSET),
+  color_(sf::Color::Green)
 {
-  position.x = startX;
-  position.y = startY;
+  position_.x = startX;
+  position_.y = startY;
 
-  block.setSize(sf::Vector2f(width, height));
-  block.setFillColor(color);
-  block.setPosition(position);
+  rect_.setSize(sf::Vector2f(width_, height_));
+  rect_.setFillColor(color_);
+  rect_.setPosition(position_);
 }
 
-Block::Block(float startX, float startY, float newWidth, float newHeight, const sf::Color newColor) :
-  width(newWidth),
-  height(newHeight),
-  color(newColor)
+Block::Block(float startX, float startY, sf::Color color) :
+  width_(BLOCK_OFFSET),
+  height_(BLOCK_OFFSET),
+  color_(color)
 {
-  position.x = startX;
-  position.y = startY;
+  position_.x = startX;
+  position_.y = startY;
 
-  block.setSize(sf::Vector2f(width, height));
-  block.setFillColor(color);
-  block.setPosition(position);
+  rect_.setSize(sf::Vector2f(width_, height_));
+  rect_.setFillColor(color_);
+  rect_.setPosition(position_);
+}
+
+
+
+Block::Block(sf::Vector2f position) :
+  position_(position),
+  width_(BLOCK_OFFSET),
+  height_(BLOCK_OFFSET),
+  color_(sf::Color::Green)
+{
+  rect_.setSize(sf::Vector2f(width_, height_));
+  rect_.setFillColor(color_);
+  rect_.setPosition(position_);
+}
+
+Block::Block(sf::Vector2f position, sf::Color color) :
+  position_(position),
+  width_(BLOCK_OFFSET),
+  height_(BLOCK_OFFSET),
+  color_(color)
+{
+  rect_.setSize(sf::Vector2f(width_, height_));
+  rect_.setFillColor(color_);
+  rect_.setPosition(position_);
+}
+
+Block::Block(float startX, float startY, float newWidth, float newheight_, const sf::Color newcolor) :
+  width_(newWidth),
+  height_(newheight_),
+  color_(newcolor)
+{
+  position_.x = startX;
+  position_.y = startY;
+
+  rect_.setSize(sf::Vector2f(width_, height_));
+  rect_.setFillColor(color_);
+  rect_.setPosition(position_);
 }
 
 Block::~Block() {

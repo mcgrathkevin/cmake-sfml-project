@@ -1,6 +1,6 @@
 # Set env variables
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(SOURCES src/main.cpp src/Snake.cpp src/block.cpp)
+set(SOURCES src/main.cpp src/snake.cpp src/block.cpp)
 # set(HEADERS include/Snake.h)
 set(PROJECT snake)
 

@@ -7,24 +7,27 @@ public:
   // add functions to play with the entity's geometry / colors / texturing...
   Block();
   Block(float x, float y);
+  Block(float startX, float startY, sf::Color color);
+  Block(sf::Vector2f position); 
+  Block(sf::Vector2f position, sf::Color color); 
   Block(float startX, float startY, const float newWidth, const float newHeight, const sf::Color newColor); 
   virtual ~Block();
 
-  float getX() const { return position.x; }
-  float getY() const { return position.y; }
-  sf::Vector2f getPos() const {return position; }
-  void setPos(sf::Vector2f newPos) { position = newPos; block.setPosition(newPos); }
-  void setX(float x) { position.x = x; block.setPosition(position); }
-  void setY(float y) { position.y = y; block.setPosition(position); }
+  float getX() const { return position_.x; }
+  float getY() const { return position_.y; }
+  sf::Vector2f getPos() const {return position_; }
+  void setPos(sf::Vector2f newPos) { position_ = newPos; rect_.setPosition(newPos); }
+  void setX(float x) { position_.x = x; rect_.setPosition(position_); }
+  void setY(float y) { position_.y = y; rect_.setPosition(position_); }
 
 private:
 
   virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    target.draw(block);
+    target.draw(rect_);
   }
 
-  sf::RectangleShape block;
-  sf::Vector2f position;
-  float width, height;
-  sf::Color color;
+  sf::RectangleShape rect_;
+  sf::Vector2f position_;
+  float width_, height_;
+  sf::Color color_;
 };

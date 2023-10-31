@@ -4,20 +4,23 @@
 #include <SFML/Graphics.hpp>
 #include "block.h"
 
-constexpr int WINDOW_WIDTH = 256;
-constexpr int WINDOW_HEIGHT = 256;
+#define EMPTY 0
+#define APPLE -1
+
+constexpr int WINDOW_WIDTH = 512;
+constexpr int WINDOW_HEIGHT = 512;
 constexpr float BLOCK_SIZE = 14.0f;
 constexpr float BLOCK_SPACING = 2.0f;
-const float BLOCK_OFFSET = BLOCK_SIZE + BLOCK_SPACING;
-const int NUM_BLOCKS = (int)(WINDOW_WIDTH / BLOCK_OFFSET);
+const float BLOCK_CELL = BLOCK_SIZE + BLOCK_SPACING;
+const int NUM_BLOCKS = (int)(WINDOW_WIDTH / BLOCK_CELL);
 
-enum direction_t {NORTH, EAST, SOUTH, WEST, NONE};
+enum direction_t {NORTH, EAST, SOUTH, WEST};
 
 class Snake : public sf::Drawable {
 public:
 
   Snake();
-  Snake(sf::Vector2f pos, int snakeSize);
+  Snake(sf::Vector2f pos, int snakeSize_);
   ~Snake();
 
   int run();
@@ -26,23 +29,26 @@ public:
 private:
   sf::RenderWindow app_;
   std::vector<std::vector<int>> board_; 
+  std::vector<Block> body_;
   sf::Vector2i head_;
   sf::Vector2i apple_;
-  sf::Text score_;
+  unsigned score_;
   direction_t direction_;
+  int snakeSize_;
+  bool gameOver_;
   // TODO: Just use math to move snake in a grid-like manner:
   // - set window dimensions
   // - match speed of snake with 1 grid per tick 
   // - determine rect_;size (pixels) by window size / #blocks
-  void update(sf::Time delta);
-  void processEvents();
-  void render();
-  bool checkCollision() const;
+  void update_(sf::Time delta);
+  void processEvents_();
+  void render_();
   
-  void moveSnake(int dX, int dY);
-  void removeTail();
-  void lerp(Block& src, Block& dest, float delta);
-  // void lerp(Block& src, turn_t& dest, float delta);
+  void moveSnake_();
+  void getBlocks_();
+  void removeTail_();
+  void lerp_(Block& src, Block& dest, float delta);
+  // void lerp_(Block& src, turn_t& dest, float delta);
   // bool isAtTurn(rect_;thisBlock, turn_t thisTurn) const;
 
   virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -55,13 +61,13 @@ private:
     int j = 0;
     for (int i = 0; i < NUM_BLOCKS; i++) 
       for (int j = 0; j < NUM_BLOCKS; j++) 
-        if (board_[i][j] > 0)
-          target.draw(Block(i*BLOCK_OFFSET, j*BLOCK_OFFSET));
+        if (board_[i][j] > EMPTY)
+          target.draw(Block(i*BLOCK_CELL, j*BLOCK_CELL));
         else if (board_[i][j] == -1)
-          target.draw(Block(i*BLOCK_OFFSET, j*BLOCK_OFFSET, sf::Color::Red));
+          target.draw(Block(i*BLOCK_CELL, j*BLOCK_CELL, sf::Color::Red));
   }
 
-  void show() const {
+  void show_() const {
     std::cout << "Displaying board" << std::endl;
     for (const auto& row : board_) {
       for (const auto& col : row)

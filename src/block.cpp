@@ -3,8 +3,8 @@
 
 Block::Block() :
   position_(sf::Vector2f()),
-  width_(BLOCK_OFFSET),
-  height_(BLOCK_OFFSET),
+  width_(BLOCK_CELL),
+  height_(BLOCK_CELL),
   color_(sf::Color::Green)
 {
   rect_.setSize(sf::Vector2f(width_, height_));
@@ -13,8 +13,8 @@ Block::Block() :
 }
 
 Block::Block(float startX, float startY) :
-  width_(BLOCK_OFFSET),
-  height_(BLOCK_OFFSET),
+  width_(BLOCK_CELL),
+  height_(BLOCK_CELL),
   color_(sf::Color::Green)
 {
   position_.x = startX;
@@ -26,8 +26,8 @@ Block::Block(float startX, float startY) :
 }
 
 Block::Block(float startX, float startY, sf::Color color) :
-  width_(BLOCK_OFFSET),
-  height_(BLOCK_OFFSET),
+  width_(BLOCK_CELL),
+  height_(BLOCK_CELL),
   color_(color)
 {
   position_.x = startX;
@@ -38,12 +38,10 @@ Block::Block(float startX, float startY, sf::Color color) :
   rect_.setPosition(position_);
 }
 
-
-
 Block::Block(sf::Vector2f position) :
   position_(position),
-  width_(BLOCK_OFFSET),
-  height_(BLOCK_OFFSET),
+  width_(BLOCK_CELL),
+  height_(BLOCK_CELL),
   color_(sf::Color::Green)
 {
   rect_.setSize(sf::Vector2f(width_, height_));
@@ -53,8 +51,8 @@ Block::Block(sf::Vector2f position) :
 
 Block::Block(sf::Vector2f position, sf::Color color) :
   position_(position),
-  width_(BLOCK_OFFSET),
-  height_(BLOCK_OFFSET),
+  width_(BLOCK_CELL),
+  height_(BLOCK_CELL),
   color_(color)
 {
   rect_.setSize(sf::Vector2f(width_, height_));
